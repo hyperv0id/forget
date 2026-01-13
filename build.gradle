@@ -54,6 +54,7 @@ repositories {
 dependencies {
     compileOnly files(stsJar, mtsJar, baseModJar)
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
 }
 
 tasks.register("verifyLocalDeps") {
@@ -85,6 +86,12 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         jvmTarget = "1.8"
         freeCompilerArgs += ["-Xjsr305=strict"]
     }
+}
+
+tasks.named("test").configure {
+    useJUnitPlatform()
+    dependsOn(tasks.named("verifyLocalDeps"))
+    systemProperty("theforget.stsJar", stsJar.absolutePath)
 }
 
 tasks.named("processResources").configure {
