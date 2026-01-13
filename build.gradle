@@ -152,6 +152,12 @@ tasks.register("installMod", Copy) {
     from(tasks.named("jar").flatMap { it.archiveFile })
 }
 
+tasks.register("devWatchInstall") {
+    group = "development"
+    description = "For use with --continuous: rebuilds and installs the mod jar into STS mods directory on changes."
+    dependsOn(tasks.named("installMod"))
+}
+
 tasks.register("runMts", Exec) {
     dependsOn(tasks.named("installMod"))
     dependsOn(tasks.named("verifyLocalDeps"))
