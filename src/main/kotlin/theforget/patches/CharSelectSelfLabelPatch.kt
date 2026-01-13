@@ -22,7 +22,7 @@ object CharSelectSelfLabelPatch {
                     """
                     {
                       try {
-                        if (${ '$' }0.c != null && ${ '$' }0.c.chosenClass == theforget.enums.TheForgetEnums.THE_FORGET) {
+                        if (this.c != null && this.c.chosenClass == theforget.enums.TheForgetEnums.THE_FORGET) {
                           String hpPrefix = com.megacrit.cardcrawl.screens.charSelect.CharacterOption.TEXT[4];
                           if (${ '$' }3 != null && ${ '$' }3.startsWith(hpPrefix)) {
                             com.megacrit.cardcrawl.localization.UIStrings ui =
