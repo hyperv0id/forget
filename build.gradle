@@ -37,10 +37,12 @@ def stsDir = findProperty("stsDir") ?: defaultStsDir
 def stsJarPath = findProperty("stsJar") ?: (stsDir ? "${stsDir}/desktop-1.0.jar" : "../resources/desktop-1.0.jar")
 def mtsJarPath = findProperty("mtsJar") ?: (defaultWorkshopDir ? "${defaultWorkshopDir}/1605060445/ModTheSpire.jar" : null)
 def baseModJarPath = findProperty("baseModJar") ?: (defaultWorkshopDir ? "${defaultWorkshopDir}/1605833019/BaseMod.jar" : null)
+def stslibJarPath = findProperty("stslibJar") ?: (defaultWorkshopDir ? "${defaultWorkshopDir}/1609158507/StSLib.jar" : null)
 
 def stsJar = file(stsJarPath)
 def mtsJar = file(mtsJarPath ?: "MISSING-ModTheSpire.jar")
 def baseModJar = file(baseModJarPath ?: "MISSING-BaseMod.jar")
+def stslibJar = file(stslibJarPath ?: "MISSING-StSLib.jar")
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -52,7 +54,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly files(stsJar, mtsJar, baseModJar)
+    compileOnly files(stsJar, mtsJar, baseModJar, stslibJar)
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22"
     testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
 }
@@ -63,14 +65,15 @@ tasks.register("verifyLocalDeps") {
         if (!stsJar.exists()) missing.add("Slay the Spire jar not found: ${stsJar}")
         if (!mtsJar.exists()) missing.add("ModTheSpire jar not found: ${mtsJar}")
         if (!baseModJar.exists()) missing.add("BaseMod jar not found: ${baseModJar}")
+        if (!stslibJar.exists()) missing.add("StSLib jar not found: ${stslibJar}")
 
         if (!missing.isEmpty()) {
             throw new GradleException(
                     "Missing local modding dependencies.\\n" +
                             missing.collect { " - ${it}" }.join("\\n") +
                             "\\n\\nFix by either:\\n" +
-                            " - Installing STS + ModTheSpire + BaseMod via Steam Workshop (recommended), or\\n" +
-                            " - Overriding paths: -PstsDir=... -PmtsJar=... -PbaseModJar=...\\n"
+                            " - Installing STS + ModTheSpire + BaseMod (+ StSLib) via Steam Workshop (recommended), or\\n" +
+                            " - Overriding paths: -PstsDir=... -PmtsJar=... -PbaseModJar=... -PstslibJar=...\\n"
             )
         }
     }
@@ -91,6 +94,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
 tasks.named("test").configure {
     useJUnitPlatform()
     dependsOn(tasks.named("verifyLocalDeps"))
+    dependsOn(tasks.named("jar"))
     systemProperty("theforget.stsJar", stsJar.absolutePath)
 }
 
@@ -149,6 +153,12 @@ tasks.register("installMod", Copy) {
     from(tasks.named("jar").flatMap { it.archiveFile })
 }
 
+tasks.register("devWatchInstall") {
+    group = "development"
+    description = "For use with --continuous: rebuilds and installs the mod jar into STS mods directory on changes."
+    dependsOn(tasks.named("installMod"))
+}
+
 tasks.register("runMts", Exec) {
     dependsOn(tasks.named("installMod"))
     dependsOn(tasks.named("verifyLocalDeps"))
@@ -166,7 +176,7 @@ tasks.register("runMts", Exec) {
             mtsJar.absolutePath,
             "--skip-intro",
             "--mods",
-            "basemod,${modId}",
+            "basemod,stslib,${modId}",
     )
 }
 
