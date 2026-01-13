@@ -1,6 +1,15 @@
-plugins {
-    id "java"
+buildscript {
+    repositories {
+        // Avoid Gradle Plugin Portal here (TLS handshake can fail in some environments).
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22"
+    }
 }
+
+apply plugin: "java"
+apply plugin: "org.jetbrains.kotlin.jvm"
 
 group = "com.hyperv0id"
 version = "0.0.1"
@@ -42,6 +51,11 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    compileOnly files(stsJar, mtsJar, baseModJar)
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22"
+}
+
 tasks.register("verifyLocalDeps") {
     doLast {
         def missing = []
@@ -65,8 +79,12 @@ tasks.named("compileJava").configure {
     dependsOn(tasks.named("verifyLocalDeps"))
 }
 
-dependencies {
-    compileOnly files(stsJar, mtsJar, baseModJar)
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    dependsOn(tasks.named("verifyLocalDeps"))
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += ["-Xjsr305=strict"]
+    }
 }
 
 tasks.named("processResources").configure {
@@ -92,6 +110,13 @@ tasks.named("processResources").configure {
 
 tasks.named("jar").configure {
     archiveFileName.set("TheForget.jar")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // Bundle Kotlin stdlib into the mod jar, so we don't rely on ModTheSpire's classpath.
+    from({
+        configurations.runtimeClasspath.collect { dep ->
+            dep.isDirectory() ? dep : zipTree(dep)
+        }
+    })
 }
 
 tasks.register("installMod", Copy) {

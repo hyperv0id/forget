@@ -15,6 +15,7 @@
 
 - JDK：任意现代 JDK 均可（本项目用 `--release 8` 编译为 Java 8 目标，兼容 STS 生态）。
 - Steam 版 STS（推荐）：用于拿到 `desktop-1.0.jar` 与 Workshop 的 `BaseMod.jar` / `ModTheSpire.jar`。
+- 语言：Kotlin（最终产物 `TheForget.jar` 会打包 Kotlin runtime，避免依赖运行时环境）
 
 ## 快速开始（Linux / Steam 默认路径）
 
