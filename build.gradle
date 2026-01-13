@@ -25,9 +25,13 @@ def defaultWorkshopDir = steamAppsDir ? "${steamAppsDir}/workshop/content/646570
 
 def stsDir = findProperty("stsDir") ?: defaultStsDir
 
-def stsJar = file(findProperty("stsJar") ?: (stsDir ? "${stsDir}/desktop-1.0.jar" : "../resources/desktop-1.0.jar"))
-def mtsJar = file(findProperty("mtsJar") ?: (defaultWorkshopDir ? "${defaultWorkshopDir}/1605060445/ModTheSpire.jar" : ""))
-def baseModJar = file(findProperty("baseModJar") ?: (defaultWorkshopDir ? "${defaultWorkshopDir}/1605833019/BaseMod.jar" : ""))
+def stsJarPath = findProperty("stsJar") ?: (stsDir ? "${stsDir}/desktop-1.0.jar" : "../resources/desktop-1.0.jar")
+def mtsJarPath = findProperty("mtsJar") ?: (defaultWorkshopDir ? "${defaultWorkshopDir}/1605060445/ModTheSpire.jar" : null)
+def baseModJarPath = findProperty("baseModJar") ?: (defaultWorkshopDir ? "${defaultWorkshopDir}/1605833019/BaseMod.jar" : null)
+
+def stsJar = file(stsJarPath)
+def mtsJar = file(mtsJarPath ?: "MISSING-ModTheSpire.jar")
+def baseModJar = file(baseModJarPath ?: "MISSING-BaseMod.jar")
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -119,6 +123,9 @@ tasks.register("runMts", Exec) {
 
     def stsDirString = stsDir == null ? "" : stsDir.toString().trim()
     def javaExec = findProperty("javaExec") ?: (stsDirString ? "${stsDirString}/jre/bin/java" : "java")
+    if (javaExec != "java" && !file(javaExec).exists()) {
+        javaExec = "java"
+    }
     workingDir = file(stsDirString)
 
     commandLine(
