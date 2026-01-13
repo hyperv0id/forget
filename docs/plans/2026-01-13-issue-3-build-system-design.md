@@ -116,12 +116,10 @@ Gradle 的 `processResources` 默认会把 `src/main/resources/**` 打进 jar，
 
 ### 3.2 交付形态
 
-推荐提供二选一（可同时做）：
+提供 Gradle task（不引入额外脚本文件）：
 
-1) `scripts/dev-watch-install.sh`
-   - 内部执行：`./gradlew --continuous installMod --no-daemon`
-2) Gradle task：`devWatchInstall`
-   - 作为 `Exec` 包一层，方便 README 里一个命令启动
+- `devWatchInstall`：`dependsOn installMod`
+- 用法：`./gradlew devWatchInstall --continuous --no-daemon`
 
 在 STS mod 开发里，这个方式是最稳的，且不需要 OS 级 inotify/watchman 依赖。
 
@@ -155,4 +153,3 @@ Gradle 的 `processResources` 默认会把 `src/main/resources/**` 打进 jar，
 STS + MTS 的开发中，Kotlin/Java 真正的 class hotswap 有限制（改签名、改字段、改构造等基本都不行），并且会把问题复杂化。
 
 本 Issue 选择的方案（continuous install）满足“开发效率”与“实现复杂度”的平衡：可快速迭代且稳定，且与社区常见开发方式一致。
-

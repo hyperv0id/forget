@@ -24,11 +24,13 @@
 - `~/.steam/steam/steamapps/common/SlayTheSpire/desktop-1.0.jar`
 - `~/.steam/steam/steamapps/workshop/content/646570/1605060445/ModTheSpire.jar`
 - `~/.steam/steam/steamapps/workshop/content/646570/1605833019/BaseMod.jar`
+- `~/.steam/steam/steamapps/workshop/content/646570/1609158507/StSLib.jar`
 
 确保你已在 Workshop 订阅并安装：
 
 - ModTheSpire (Workshop ID: `1605060445`)
 - BaseMod (Workshop ID: `1605833019`)
+- StSLib (Workshop ID: `1609158507`)
 
 然后：
 
@@ -46,6 +48,15 @@
 
 （该日志由 `theforget.TheForgetMod` 打出。）
 
+## 开发热加载（continuous install）
+
+这不是 JVM 真热替换，而是：代码/资源变更后自动重新构建并把 `TheForget.jar` 复制进 STS 的 `mods/` 目录。
+游戏本体仍需要你手动重启（或回主菜单后重新开局）。
+
+```bash
+./gradlew devWatchInstall --continuous --no-daemon
+```
+
 ## 自定义依赖路径（Windows/macOS/非 Steam 安装）
 
 可以通过 Gradle 属性覆盖默认路径：
@@ -54,7 +65,8 @@
 ./gradlew clean build \
   -PstsDir="/path/to/SlayTheSpire" \
   -PmtsJar="/path/to/ModTheSpire.jar" \
-  -PbaseModJar="/path/to/BaseMod.jar"
+  -PbaseModJar="/path/to/BaseMod.jar" \
+  -PstslibJar="/path/to/StSLib.jar"
 ```
 
 也可以只覆盖其中一个。

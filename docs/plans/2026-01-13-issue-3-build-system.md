@@ -144,42 +144,42 @@ git commit -m "build: add StSLib as compileOnly dependency"
 ### Task 4: 增加开发期 continuous install 脚本（热加载方案 1）
 
 **Files:**
-- Create: `scripts/dev-watch-install.sh`
+- Modify: `build.gradle`
 - Modify: `.gitignore`（若需要）
 - Modify: `README.md`
 
-**Step 1: 添加脚本**
+**Step 1: 添加 Gradle task `devWatchInstall`**
 
-脚本行为：
-- `set -euo pipefail`
-- 支持传入（可选）`-PstsDir=...` 等参数透传给 Gradle
-- 默认执行：
-  - `./gradlew --continuous installMod --no-daemon`
+在 `build.gradle` 里新增：
 
-建议在脚本顶部打印说明：
-- 这是“自动 build+copy jar”，不是 JVM 真热替换
-- 游戏仍需手动重启/回主菜单
+- `devWatchInstall`（`dependsOn installMod`）
+- `group = "development"`
+- `description` 说明它用于配合 `--continuous`
+
+**用法：**
+
+- `./gradlew devWatchInstall --continuous --no-daemon`
 
 **Step 2: README 增加开发工作流段落**
 
 新增章节（简短即可）：
 
 - “开发热加载（continuous install）”
-- 示例命令：`./scripts/dev-watch-install.sh`
-- 可选参数覆盖：`./scripts/dev-watch-install.sh -PstsDir=...`
+- 示例命令：`./gradlew devWatchInstall --continuous --no-daemon`
+- 可选参数覆盖：`./gradlew devWatchInstall --continuous --no-daemon -PstsDir=...`
 
 **Step 3: Verify（脚本可运行）**
 
-Run: `bash scripts/dev-watch-install.sh -PstsDir="$HOME/.steam/steam/steamapps/common/SlayTheSpire"`  
-Expected: 进入 continuous 状态，检测到变更时会重新执行 `installMod`
+Run: `./gradlew devWatchInstall --continuous --no-daemon -PstsDir="$HOME/.steam/steam/steamapps/common/SlayTheSpire"`  
+Expected: 进入 continuous 状态，检测到变更时会重新执行 `installMod`（复制 jar）
 
 （手动 Ctrl+C 停止即可）
 
 **Step 4: Commit**
 
 ```bash
-git add scripts/dev-watch-install.sh README.md
-git commit -m "dev: add continuous installMod watcher script"
+git add build.gradle README.md
+git commit -m "dev: add devWatchInstall continuous install task"
 ```
 
 ---
@@ -217,4 +217,3 @@ git commit -m "docs: finalize issue #3 design with acceptance checklist"
 2) `./gradlew installMod --no-daemon` 复制到 STS `mods/`  
 3) `./gradlew runMts --no-daemon` 可正常加载（日志包含 “The Forget loaded successfully.”）  
 4) `./scripts/dev-watch-install.sh` 持续运行；修改任意 `src/main/kotlin/**` 或 `src/main/resources/**`，观察到自动重新执行 `installMod`
-
