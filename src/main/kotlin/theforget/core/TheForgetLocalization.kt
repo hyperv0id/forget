@@ -21,4 +21,16 @@ object TheForgetLocalization {
             "theforgetResources/localization/${lang}/UIstrings.json",
         )
     }
+
+    /**
+     * Some STS text assets use "NL" as a newline token (commonly in card descriptions).
+     * TipHelper.renderGenericTip does not automatically expand it for UIStrings, so we normalize it here.
+     */
+    fun normalizeLineBreaks(text: String): String {
+        // Keep it intentionally simple: we only use this for our own UIStrings tooltip bodies.
+        return text
+            .replace("NL", "\n")
+            .replace(" \n", "\n")
+            .replace("\n ", "\n")
+    }
 }

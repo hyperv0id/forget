@@ -33,7 +33,7 @@ object TopPanelSelfTooltipPatch {
         }.getOrNull() ?: return SpireReturn.Continue()
 
         val title = ui.TEXT.getOrNull(0) ?: return SpireReturn.Continue()
-        val body = ui.TEXT.getOrNull(1) ?: ""
+        val body = TheForgetLocalization.normalizeLineBreaks(ui.TEXT.getOrNull(1) ?: "")
 
         // Match vanilla tooltip positioning logic in TopPanel.updateTips():
         // TipHelper.renderGenericTip(InputHelper.mX - TIP_OFF_X, TIP_Y, ...).
