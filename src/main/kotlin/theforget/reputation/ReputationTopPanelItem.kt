@@ -24,6 +24,12 @@ class ReputationTopPanelItem : TopPanelItem(loadIcon(), ID) {
 
         private fun loadIcon(): Texture = ImageMaster.loadImage(TheForgetAssets.REPUTATION_ICON)
 
+        private fun formatSignedInt(value: Int): String =
+            when {
+                value > 0 -> "+$value"
+                else -> value.toString()
+            }
+
         private fun shouldRender(): Boolean {
             val player = AbstractDungeon.player ?: return false
             return player.chosenClass == TheForgetEnums.THE_FORGET
@@ -40,7 +46,7 @@ class ReputationTopPanelItem : TopPanelItem(loadIcon(), ID) {
         super.render(sb)
 
         // Draw the numeric amount near the icon (similar to how many mods render counters).
-        val amount = ReputationState.get().toString()
+        val amount = formatSignedInt(ReputationState.get())
         FontHelper.renderFontCentered(
             sb,
             FontHelper.topPanelAmountFont,
@@ -60,11 +66,21 @@ class ReputationTopPanelItem : TopPanelItem(loadIcon(), ID) {
         if (!this.hitbox.hovered) return
 
         val ui = CardCrawlGame.languagePack.getUIString(TheForgetLocalization.REPUTATION_TOOLTIP_KEY)
+        val tierNames = CardCrawlGame.languagePack.getUIString(TheForgetLocalization.REPUTATION_TIER_NAMES_KEY)
+        val tierSummaries = CardCrawlGame.languagePack.getUIString(TheForgetLocalization.REPUTATION_TIER_SUMMARIES_KEY)
+
         val title = ui.TEXT.getOrNull(0) ?: "Reputation"
         val bodyTemplate = ui.TEXT.getOrNull(1) ?: ""
+
+        val tier = ReputationState.tier()
+        val tierName = tierNames.TEXT.getOrNull(tier.ordinal) ?: tier.name
+        val tierSummary = tierSummaries.TEXT.getOrNull(tier.ordinal) ?: ""
+
         val body = TheForgetLocalization
             .normalizeLineBreaks(bodyTemplate)
-            .replace("{0}", ReputationState.get().toString())
+            .replace("{0}", formatSignedInt(ReputationState.get()))
+            .replace("{1}", tierName)
+            .replace("{2}", tierSummary)
 
         // Align tooltip to the top panel area to reduce overlap with the cursor.
         val tipX = this.x - this.hb_w
@@ -76,4 +92,3 @@ class ReputationTopPanelItem : TopPanelItem(loadIcon(), ID) {
         super.onUnhover()
     }
 }
-

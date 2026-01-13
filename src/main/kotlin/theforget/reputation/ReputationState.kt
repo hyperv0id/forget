@@ -1,7 +1,5 @@
 package theforget.reputation
 
-import kotlin.math.max
-
 /**
  * Run-scoped reputation ("名望") state.
  *
@@ -16,8 +14,16 @@ object ReputationState {
     fun get(): Int = value
 
     fun set(newValue: Int) {
-        value = max(0, newValue)
+        value = newValue
     }
+
+    fun tier(): ReputationTier =
+        when {
+            value >= 4 -> ReputationTier.HIGH
+            value >= 1 -> ReputationTier.POSITIVE
+            value >= -3 -> ReputationTier.NEGATIVE
+            else -> ReputationTier.EXTREMELY_LOW
+        }
 
     fun add(delta: Int) {
         set(value + delta)
@@ -27,4 +33,3 @@ object ReputationState {
         value = DEFAULT
     }
 }
-

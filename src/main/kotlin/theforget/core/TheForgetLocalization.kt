@@ -9,6 +9,8 @@ object TheForgetLocalization {
     const val SELF_LABEL_KEY: String = "theforget:SelfLabel"
     const val REPUTATION_TOOLTIP_KEY: String = "theforget:ReputationTooltip"
     const val REPUTATION_LABEL_KEY: String = "theforget:ReputationLabel"
+    const val REPUTATION_TIER_NAMES_KEY: String = "theforget:ReputationTierNames"
+    const val REPUTATION_TIER_SUMMARIES_KEY: String = "theforget:ReputationTierSummaries"
 
     fun langFolder(): String = when (Settings.language) {
         Settings.GameLanguage.ZHS -> "zhs"

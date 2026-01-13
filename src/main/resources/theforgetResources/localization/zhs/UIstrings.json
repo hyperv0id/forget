@@ -13,12 +13,28 @@
   "theforget:ReputationTooltip": {
     "TEXT": [
       "名望",
-      "你在这片高塔里的名声与威望。NL 它会影响部分事件/交互的叙事与反馈。NL NL 当前名望：{0}"
+      "你在这片高塔里的名声与威望。NL 它会影响部分事件/交互的叙事与反馈。NL NL 当前名望：{0} NL 区间：{1} NL {2}"
     ]
   },
   "theforget:ReputationLabel": {
     "TEXT": [
       "名望"
+    ]
+  },
+  "theforget:ReputationTierNames": {
+    "TEXT": [
+      "高名望",
+      "正名望",
+      "负名望",
+      "极低"
+    ]
+  },
+  "theforget:ReputationTierSummaries": {
+    "TEXT": [
+      "清理污染：自动/免费 NL 好感度获取：双倍效率 NL 战斗特性：无",
+      "清理污染：可用 NL 好感度获取：正常 NL 战斗特性：无",
+      "清理污染：不可用 NL 好感度获取：减半 NL 战斗特性：无（喘息区）",
+      "清理污染：不可用 NL 好感度获取：停止 NL 战斗特性：模仿牌耗血 + 增伤"
     ]
   }
 }

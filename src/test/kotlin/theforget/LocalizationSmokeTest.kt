@@ -21,6 +21,8 @@ class LocalizationSmokeTest {
             assertTrue(text.contains("\"theforget:SelfLabel\""), "Missing key theforget:SelfLabel in $path")
             assertTrue(text.contains("\"theforget:ReputationTooltip\""), "Missing key theforget:ReputationTooltip in $path")
             assertTrue(text.contains("\"theforget:ReputationLabel\""), "Missing key theforget:ReputationLabel in $path")
+            assertTrue(text.contains("\"theforget:ReputationTierNames\""), "Missing key theforget:ReputationTierNames in $path")
+            assertTrue(text.contains("\"theforget:ReputationTierSummaries\""), "Missing key theforget:ReputationTierSummaries in $path")
         }
     }
 }

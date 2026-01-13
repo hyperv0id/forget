@@ -27,6 +27,17 @@ class ReputationSaveFieldTest {
     }
 
     @Test
+    fun `onLoad restores negative reputation from save`() {
+        ReputationState.reset()
+        ReputationState.set(1)
+
+        val saveField = ReputationSaveField()
+        saveField.onLoad(-4)
+
+        assertEquals(-4, ReputationState.get())
+    }
+
+    @Test
     fun `onLoad null falls back to default`() {
         ReputationState.reset()
         ReputationState.set(7)
@@ -37,4 +48,3 @@ class ReputationSaveFieldTest {
         assertEquals(0, ReputationState.get())
     }
 }
-
