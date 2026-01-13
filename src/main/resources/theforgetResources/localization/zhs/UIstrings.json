@@ -1,0 +1,13 @@
+{
+  "theforget:SelfTooltip": {
+    "TEXT": [
+      "自我",
+      "【自我】即你的生命值。NL 受伤 = 自我流失。NL 自我归零则本局结束。"
+    ]
+  },
+  "theforget:SelfLabel": {
+    "TEXT": [
+      "自我"
+    ]
+  }
+}

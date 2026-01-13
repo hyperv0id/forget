@@ -1,6 +1,7 @@
 package theforget
 
 import basemod.BaseMod
+import basemod.interfaces.EditStringsSubscriber
 import basemod.interfaces.EditCharactersSubscriber
 import basemod.interfaces.PostInitializeSubscriber
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer
@@ -8,10 +9,11 @@ import com.megacrit.cardcrawl.core.CardCrawlGame
 import org.apache.logging.log4j.LogManager
 import theforget.characters.TheForgetCharacter
 import theforget.core.TheForgetAssets
+import theforget.core.TheForgetLocalization
 import theforget.enums.TheForgetEnums
 
 @SpireInitializer
-object TheForgetMod : PostInitializeSubscriber, EditCharactersSubscriber {
+object TheForgetMod : PostInitializeSubscriber, EditCharactersSubscriber, EditStringsSubscriber {
     private val logger = LogManager.getLogger(TheForgetMod::class.java)
 
     @JvmStatic
@@ -35,6 +37,11 @@ object TheForgetMod : PostInitializeSubscriber, EditCharactersSubscriber {
             TheForgetAssets.CHAR_SELECT_PORTRAIT,
             playerClass,
         )
+    }
+
+    override fun receiveEditStrings() {
+        logger.info("Loading The Forget localization strings...")
+        TheForgetLocalization.loadUiStrings()
     }
 
     override fun receivePostInitialize() {

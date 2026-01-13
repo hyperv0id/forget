@@ -1,7 +1,7 @@
 # The Forget 开发踩坑记录
 
 > 更新时间：2026-01-13  
-> 覆盖范围：Issue #2（角色骨架 / Character skeleton），以及周边基础设施体验
+> 覆盖范围：Issue #2（角色骨架 / Character skeleton）、Issue #3（构建系统/资源约定）、Issue #4（自我/HP UI 文案），以及周边基础设施体验
 
 本文用于记录“当时踩过、后来证明确实会坑一次”的点，避免反复浪费时间。
 
@@ -108,6 +108,66 @@ rg -n "extends CustomPlayer|: CustomPlayer\\(" ../resources/mods -S --glob='*.ja
 
 ---
 
+## 6) `gh pr comment` / `gh pr edit`：不要把 `\n` 当换行写进去
+
+现象：你在 `gh pr comment -b "line1\nline2"` 或 `gh pr edit --body "..."` 里手写 `\n`，最后 GitHub 上显示的是字面量 `\\n`（而不是换行）。
+
+根因：这类命令的 `-b/--body` 参数接收的是“普通字符串”，`\n` 不一定会被 shell 或 gh CLI 当作换行转义；最终会被当作字符序列写入 GitHub。
+
+解决方式（推荐顺序）：
+
+- **用文件输入**（最稳）：`gh pr comment ... -F /tmp/comment.md` / `gh pr edit ... --body-file /tmp/body.md`
+- 或者：直接在参数里写真实换行（不写 `\n`）
+
+---
+
+## 7) TopPanel（战斗内顶栏）Tooltip：坐标不要硬编码
+
+现象：战斗内 hover 顶栏血量区域，tooltip “应该出现但看不到”，像是没生效。
+
+根因：顶栏血量在左上角；如果 tooltip 坐标用了硬编码（例如 `y = HEIGHT - 120*scale`），很容易把 tooltip 画到屏幕外。
+原版 `TopPanel.updateTips()` 的逻辑是：
+
+- `x = InputHelper.mX - TIP_OFF_X`
+- `y = TIP_Y`
+
+解决方式：
+
+- patch `TopPanel.updateTips()` 时，tooltip 的坐标也复用原版的 `TIP_OFF_X/TIP_Y`（必要时用 `ReflectionHacks.getPrivateStatic` 读取）。
+
+---
+
+## 8) `TipHelper.renderGenericTip` 不会自动展开 `NL`（会把 NL 画出来）
+
+现象：tooltip 文案里写了 `NL`，结果游戏里显示出字面量 “NL”，而不是换行。
+
+根因：`NL` 是 STS 文本资产里“常用但不统一”的换行约定；卡牌描述等地方常见，但 `TipHelper.renderGenericTip` 并不会帮你把 `NL` token 展开成换行。
+
+解决方式：
+
+- tooltip 渲染前手动 normalize：把 `NL` 替换为实际换行符 `\n`（并清理换行两侧空格）。
+
+---
+
+## 9) Javassist `ExprEditor.replace`：static call 里别用 `$0.xxx`
+
+现象：`./gradlew runMts` / 游戏启动的 “Injecting patches” 阶段报：
+
+> `javassist.CannotCompileException: [source error] no such field: $0/c`
+
+根因：我们 patch `CharacterOption.renderInfo()` 时，是在 `ExprEditor` 里替换 `FontHelper.renderSmartText(...)` 调用。
+但是 `FontHelper.renderSmartText` 是 **static 方法**：
+
+- `$0` 不指向 `CharacterOption`（甚至可能不存在/语义不同），因此 `$0.c` 会编译失败
+- 这类场景应该用 `this`（正在被 instrument 的方法所属实例）访问字段：`this.c`
+
+解决方式：
+
+- 在 replace 的代码块里用 `this` 来访问 `CharacterOption` 实例字段（例如 `this.c`）
+- Kotlin multiline string 里如果要输出 `$proceed` / `$3` 这类 Javassist 变量，要记得规避 Kotlin 的 `$` 插值（用 `${'$'}`）。
+
+---
+
 ## 参考模组（本机对照来源）
 
 以下目录来自 `../resources/mods/`，用于对照常见实现姿势（不代表许可/可复制粘贴到本仓库）：
@@ -116,4 +176,3 @@ rg -n "extends CustomPlayer|: CustomPlayer\\(" ../resources/mods -S --glob='*.ja
 - `../resources/mods/ThePackmaster/`
 - `../resources/mods/DuskMod/`
 - `../resources/mods/AcaciaTheSpire/`
-

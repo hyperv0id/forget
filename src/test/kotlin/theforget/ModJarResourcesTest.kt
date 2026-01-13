@@ -29,7 +29,17 @@ class ModJarResourcesTest {
                 "Found un-namespaced resource entries in TheForget.jar (risk of cross-mod collisions):\n" +
                     offenders.take(50).joinToString("\n"),
             )
+
+            val requiredFiles = listOf(
+                "theforgetResources/localization/zhs/UIstrings.json",
+                "theforgetResources/localization/eng/UIstrings.json",
+            )
+            val missingRequiredFiles = requiredFiles.filterNot { entries.contains(it) }
+            assertTrue(
+                missingRequiredFiles.isEmpty(),
+                "Missing required localization files in TheForget.jar:\n" +
+                    missingRequiredFiles.joinToString("\n"),
+            )
         }
     }
 }
-
