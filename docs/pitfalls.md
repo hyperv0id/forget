@@ -1,7 +1,7 @@
 # The Forget 开发踩坑记录
 
 > 更新时间：2026-01-13  
-> 覆盖范围：Issue #2（角色骨架 / Character skeleton）、Issue #3（构建系统/资源约定）、Issue #4（自我/HP UI 文案），以及周边基础设施体验
+> 覆盖范围：Issue #2（角色骨架 / Character skeleton）、Issue #3（构建系统/资源约定）、Issue #4（自我/HP UI 文案）、Issue #5（名望系统骨架），以及周边基础设施体验
 
 本文用于记录“当时踩过、后来证明确实会坑一次”的点，避免反复浪费时间。
 
@@ -165,6 +165,65 @@ rg -n "extends CustomPlayer|: CustomPlayer\\(" ../resources/mods -S --glob='*.ja
 
 - 在 replace 的代码块里用 `this` 来访问 `CharacterOption` 实例字段（例如 `this.c`）
 - Kotlin multiline string 里如果要输出 `$proceed` / `$3` 这类 Javassist 变量，要记得规避 Kotlin 的 `$` 插值（用 `${'$'}`）。
+
+---
+
+## 10) BaseMod `addSaveField` + Kotlin：需要显式泛型，否则推断会失败
+
+现象：在 Kotlin 里调用 `BaseMod.addSaveField(key, handler)` 可能直接编译失败：
+
+> `Not enough information to infer type variable T`
+
+根因：BaseMod 的签名是：
+
+```java
+public static <T> void addSaveField(String key, CustomSavableRaw saveField)
+```
+
+它虽然有 `<T>`，但实际参数只有 `CustomSavableRaw`，Kotlin 无法从参数推断出 `T`，于是报错。
+
+解决方式：
+
+- 在 Kotlin 调用处显式标注泛型（推荐）：`BaseMod.addSaveField<Int?>(...)`
+- 或者把 saveField 变量显式声明为 `CustomSavableRaw`（但可读性更差）
+
+本项目中的做法（Issue #5）：
+- `src/main/kotlin/theforget/TheForgetMod.kt`：`BaseMod.addSaveField<Int?>(REPUTATION_SAVE_FIELD_ID, reputationSaveField)`
+- `src/main/kotlin/theforget/reputation/ReputationSaveField.kt`：`CustomSavable<Int?>` 并在 `onLoad(null)` 时回退默认值
+
+---
+
+## 11) 测试编译 classpath：测试也需要 STS/BaseMod jar 才能编译通过
+
+现象：你在 main source 里引用了 BaseMod/STS 类型（例如 `CustomSavable` / `AbstractDungeon`），即使 production 编译依赖是 `compileOnly`，也可能导致 `./gradlew test` 在 `compileTestKotlin` 阶段失败：
+
+> `unresolved supertypes: basemod.abstracts.CustomSavable`
+
+根因：测试代码（以及测试编译阶段）也会编译 production classes；如果 test classpath 没有 BaseMod 这些 jar，Kotlin 编译器会认为 supertypes 缺失。
+
+解决方式：
+
+- 在 `build.gradle` 里为 tests 增加同一组本地 jar：
+  - `testImplementation files(stsJar, mtsJar, baseModJar, stslibJar)`
+
+注意：这不代表把这些 jar “打进 mod jar”，只是让测试能编译/运行。
+
+---
+
+## 12) TopPanelItem 只对本角色添加：否则会“白占位/与 UI mod 冲突”
+
+现象：用 `BaseMod.addTopPanelItem(...)` 做额外资源 UI 很方便，但如果你在 mod 初始化时无条件 add：
+
+- 其它角色也会在顶栏看到一个“空图标/无意义 UI”
+- 一些 UI mod（例如隐藏顶栏/改布局）可能更容易出现冲突或遮挡
+
+解决方式（Issue #5 的经验）：
+
+- 在 `PostDungeonInitializeSubscriber`（拿到 `AbstractDungeon.player` 之后）再决定 add/remove
+- 并且维护一个布尔标记避免重复 add（BaseMod/TopPanelGroup 的顺序是“注册顺序”，重复 add 会造成多份）
+
+本项目做法：
+- `src/main/kotlin/theforget/TheForgetMod.kt`：`receivePostDungeonInitialize()` 时按 `chosenClass` 动态 add/remove 名望 item
 
 ---
 
