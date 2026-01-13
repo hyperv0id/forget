@@ -35,9 +35,18 @@ object TopPanelSelfTooltipPatch {
         val title = ui.TEXT.getOrNull(0) ?: return SpireReturn.Continue()
         val body = ui.TEXT.getOrNull(1) ?: ""
 
+        // Match vanilla tooltip positioning logic in TopPanel.updateTips():
+        // TipHelper.renderGenericTip(InputHelper.mX - TIP_OFF_X, TIP_Y, ...).
+        val tipOffX = runCatching {
+            ReflectionHacks.getPrivateStatic<Float>(TopPanel::class.java, "TIP_OFF_X")
+        }.getOrNull() ?: 140.0f * Settings.scale
+        val tipY = runCatching {
+            ReflectionHacks.getPrivateStatic<Float>(TopPanel::class.java, "TIP_Y")
+        }.getOrNull() ?: (Settings.HEIGHT.toFloat() - 120.0f * Settings.scale)
+
         TipHelper.renderGenericTip(
-            InputHelper.mX.toFloat() - 140.0f * Settings.scale,
-            Settings.HEIGHT.toFloat() - 120.0f * Settings.scale,
+            InputHelper.mX.toFloat() - tipOffX,
+            tipY,
             title,
             body,
         )
@@ -46,4 +55,3 @@ object TopPanelSelfTooltipPatch {
         return SpireReturn.Return(null)
     }
 }
-
