@@ -1,0 +1,169 @@
+buildscript {
+    repositories {
+        // Avoid Gradle Plugin Portal here (TLS handshake can fail in some environments).
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22"
+    }
+}
+
+apply plugin: "java"
+apply plugin: "org.jetbrains.kotlin.jvm"
+
+group = "com.hyperv0id"
+version = "0.0.1"
+
+def modId = "theforget"
+def modName = "The Forget"
+def modDescription = "Forget for Get (遗忘是为了获得)"
+
+def userHome = System.getenv("HOME") ?: ""
+
+def defaultSteamAppsDir = [
+        "${userHome}/.steam/steam/steamapps",
+        // Fallback that works for some Linux setups
+        "${userHome}/.local/share/Steam/steamapps",
+        // macOS
+        "${userHome}/Library/Application Support/Steam/steamapps",
+].find { candidate -> file(candidate).exists() }
+
+def steamAppsDir = (findProperty("steamAppsDir") ?: defaultSteamAppsDir) ?: ""
+def defaultStsDir = steamAppsDir ? "${steamAppsDir}/common/SlayTheSpire" : ""
+def defaultWorkshopDir = steamAppsDir ? "${steamAppsDir}/workshop/content/646570" : ""
+
+def stsDir = findProperty("stsDir") ?: defaultStsDir
+
+def stsJarPath = findProperty("stsJar") ?: (stsDir ? "${stsDir}/desktop-1.0.jar" : "../resources/desktop-1.0.jar")
+def mtsJarPath = findProperty("mtsJar") ?: (defaultWorkshopDir ? "${defaultWorkshopDir}/1605060445/ModTheSpire.jar" : null)
+def baseModJarPath = findProperty("baseModJar") ?: (defaultWorkshopDir ? "${defaultWorkshopDir}/1605833019/BaseMod.jar" : null)
+
+def stsJar = file(stsJarPath)
+def mtsJar = file(mtsJarPath ?: "MISSING-ModTheSpire.jar")
+def baseModJar = file(baseModJarPath ?: "MISSING-BaseMod.jar")
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly files(stsJar, mtsJar, baseModJar)
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22"
+}
+
+tasks.register("verifyLocalDeps") {
+    doLast {
+        def missing = []
+        if (!stsJar.exists()) missing.add("Slay the Spire jar not found: ${stsJar}")
+        if (!mtsJar.exists()) missing.add("ModTheSpire jar not found: ${mtsJar}")
+        if (!baseModJar.exists()) missing.add("BaseMod jar not found: ${baseModJar}")
+
+        if (!missing.isEmpty()) {
+            throw new GradleException(
+                    "Missing local modding dependencies.\\n" +
+                            missing.collect { " - ${it}" }.join("\\n") +
+                            "\\n\\nFix by either:\\n" +
+                            " - Installing STS + ModTheSpire + BaseMod via Steam Workshop (recommended), or\\n" +
+                            " - Overriding paths: -PstsDir=... -PmtsJar=... -PbaseModJar=...\\n"
+            )
+        }
+    }
+}
+
+tasks.named("compileJava").configure {
+    dependsOn(tasks.named("verifyLocalDeps"))
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    dependsOn(tasks.named("verifyLocalDeps"))
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += ["-Xjsr305=strict"]
+    }
+}
+
+tasks.named("processResources").configure {
+    inputs.properties(
+            modId: modId,
+            modName: modName,
+            modDescription: modDescription,
+            modVersion: project.version,
+            stsVersion: "12-18-2022",
+            mtsVersion: "3.30.3",
+    )
+    filesMatching("ModTheSpire.json") {
+        expand(
+                modId: modId,
+                modName: modName,
+                modDescription: modDescription,
+                modVersion: project.version,
+                stsVersion: "12-18-2022",
+                mtsVersion: "3.30.3",
+        )
+    }
+}
+
+tasks.named("jar").configure {
+    archiveFileName.set("TheForget.jar")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // Bundle Kotlin stdlib into the mod jar, so we don't rely on ModTheSpire's classpath.
+    from({
+        configurations.runtimeClasspath.collect { dep ->
+            dep.isDirectory() ? dep : zipTree(dep)
+        }
+    })
+}
+
+tasks.register("installMod", Copy) {
+    dependsOn(tasks.named("jar"))
+    dependsOn(tasks.named("verifyLocalDeps"))
+
+    doFirst {
+        def stsDirString = (stsDir == null) ? "" : stsDir.toString().trim()
+        if (stsDirString.isEmpty()) {
+            throw new GradleException("Cannot infer STS directory. Provide -PstsDir=/path/to/SlayTheSpire")
+        }
+
+        def modsDir = file("${stsDirString}/mods")
+        if (!modsDir.exists() && !modsDir.mkdirs()) {
+            throw new GradleException("Failed to create STS mods directory: ${modsDir}")
+        }
+
+        // Prevent duplicate copies being loaded by ModTheSpire (e.g. TheForget.jar + TheForget-0.0.1.jar).
+        modsDir.listFiles()?.findAll { it.isFile() && it.name.startsWith("TheForget") && it.name.endsWith(".jar") }?.each { it.delete() }
+    }
+
+    into(file("${stsDir.toString().trim()}/mods"))
+    from(tasks.named("jar").flatMap { it.archiveFile })
+}
+
+tasks.register("runMts", Exec) {
+    dependsOn(tasks.named("installMod"))
+    dependsOn(tasks.named("verifyLocalDeps"))
+
+    def stsDirString = stsDir == null ? "" : stsDir.toString().trim()
+    def javaExec = findProperty("javaExec") ?: (stsDirString ? "${stsDirString}/jre/bin/java" : "java")
+    if (javaExec != "java" && !file(javaExec).exists()) {
+        javaExec = "java"
+    }
+    workingDir = file(stsDirString)
+
+    commandLine(
+            javaExec,
+            "-jar",
+            mtsJar.absolutePath,
+            "--skip-intro",
+            "--mods",
+            "basemod,${modId}",
+    )
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.release = 8
+}

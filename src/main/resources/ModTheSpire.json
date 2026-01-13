@@ -1,0 +1,15 @@
+{
+  "modid": "${modId}",
+  "name": "${modName}",
+  "author_list": [
+    "hyperv0id"
+  ],
+  "description": "${modDescription}",
+  "version": "${modVersion}",
+  "sts_version": "${stsVersion}",
+  "mts_version": "${mtsVersion}",
+  "dependencies": [
+    "basemod"
+  ]
+}
+
