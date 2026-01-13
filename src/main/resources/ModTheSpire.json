@@ -9,7 +9,7 @@
   "sts_version": "${stsVersion}",
   "mts_version": "${mtsVersion}",
   "dependencies": [
-    "basemod"
+    "basemod",
+    "stslib"
   ]
 }
-
