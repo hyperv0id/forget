@@ -1,0 +1,38 @@
+name: Bug 报告
+description: 报告游戏中的问题
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug 描述
+      placeholder: 请清晰描述遇到的问题
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 进入...
+        2. 点击...
+        3. 观察到...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+      placeholder: 描述你期望发生的正确行为
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志/截图
+      placeholder: 粘贴相关日志或截图（可选）
+  - type: input
+    id: version
+    attributes:
+      label: 游戏/Mod 版本
+      placeholder: "例如: StS v2.3 / TheForget v0.1.0"
