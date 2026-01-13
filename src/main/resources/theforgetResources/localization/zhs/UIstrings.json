@@ -13,7 +13,7 @@
   "theforget:ReputationTooltip": {
     "TEXT": [
       "名望",
-      "你在这片高塔里的名声与威望。NL 它会影响部分事件/交互的叙事与反馈。"
+      "你在这片高塔里的名声与威望。NL 它会影响部分事件/交互的叙事与反馈。NL NL 当前名望：{0}"
     ]
   },
   "theforget:ReputationLabel": {

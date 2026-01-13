@@ -13,7 +13,7 @@
   "theforget:ReputationTooltip": {
     "TEXT": [
       "Reputation",
-      "Your name in the Spire. NL It may affect some events/interactions and their narrative feedback."
+      "Your name in the Spire. NL It may affect some events/interactions and their narrative feedback. NL NL Current: {0}"
     ]
   },
   "theforget:ReputationLabel": {

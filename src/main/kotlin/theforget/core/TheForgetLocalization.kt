@@ -7,6 +7,8 @@ import com.megacrit.cardcrawl.localization.UIStrings
 object TheForgetLocalization {
     const val SELF_TOOLTIP_KEY: String = "theforget:SelfTooltip"
     const val SELF_LABEL_KEY: String = "theforget:SelfLabel"
+    const val REPUTATION_TOOLTIP_KEY: String = "theforget:ReputationTooltip"
+    const val REPUTATION_LABEL_KEY: String = "theforget:ReputationLabel"
 
     fun langFolder(): String = when (Settings.language) {
         Settings.GameLanguage.ZHS -> "zhs"
