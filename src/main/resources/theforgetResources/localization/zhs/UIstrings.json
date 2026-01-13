@@ -9,5 +9,16 @@
     "TEXT": [
       "自我"
     ]
+  },
+  "theforget:ReputationTooltip": {
+    "TEXT": [
+      "名望",
+      "你在这片高塔里的名声与威望。NL 它会影响部分事件/交互的叙事与反馈。"
+    ]
+  },
+  "theforget:ReputationLabel": {
+    "TEXT": [
+      "名望"
+    ]
   }
 }

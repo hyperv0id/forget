@@ -9,5 +9,16 @@
     "TEXT": [
       "Self"
     ]
+  },
+  "theforget:ReputationTooltip": {
+    "TEXT": [
+      "Reputation",
+      "Your name in the Spire. NL It may affect some events/interactions and their narrative feedback."
+    ]
+  },
+  "theforget:ReputationLabel": {
+    "TEXT": [
+      "Reputation"
+    ]
   }
 }
