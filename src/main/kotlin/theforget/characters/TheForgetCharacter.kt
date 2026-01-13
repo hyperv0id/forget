@@ -86,7 +86,9 @@ class TheForgetCharacter(name: String) : CustomPlayer(
 
     override fun doCharSelectScreenSelectEffect() {
         CardCrawlGame.sound.playA("ATTACK_HEAVY", MathUtils.random(-0.2f, 0.2f))
-        CardCrawlGame.screenShake.shake(ScreenShake.ShakeIntensity.HIGH, ScreenShake.ShakeDur.XLONG, true)
+        // Match vanilla Ironclad select effect: MED + SHORT.
+        // Using HIGH/XLONG can make the whole screen feel like it's constantly jittering after selection.
+        CardCrawlGame.screenShake.shake(ScreenShake.ShakeIntensity.MED, ScreenShake.ShakeDur.SHORT, true)
     }
 
     override fun getCustomModeCharacterButtonSoundKey(): String = "ATTACK_HEAVY"
