@@ -26,8 +26,9 @@ import java.util.ArrayList
 class TheForgetCharacter(name: String) : CustomPlayer(
     name,
     requireNotNull(TheForgetEnums.THE_FORGET) { "TheForgetEnums.THE_FORGET was not initialized (SpireEnum failed?)" },
-    null,
-    null,
+    TheForgetAssets.ENERGY_ORB_TEXTURES,
+    TheForgetAssets.ENERGY_ORB_VFX,
+    TheForgetAssets.ENERGY_ORB_LAYER_SPEEDS,
     SpineAnimation(TheForgetAssets.SKELETON_ATLAS, TheForgetAssets.SKELETON_JSON, 1.0f),
 ) {
     init {

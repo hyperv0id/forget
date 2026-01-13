@@ -23,11 +23,12 @@ class AssetPathsTest {
                 theforget.core.TheForgetAssets.SHOULDER_1,
                 theforget.core.TheForgetAssets.SHOULDER_2,
                 theforget.core.TheForgetAssets.CORPSE,
-            )
+                // energy orb
+                theforget.core.TheForgetAssets.ENERGY_ORB_VFX,
+            ) + theforget.core.TheForgetAssets.ENERGY_ORB_TEXTURES.toList()
 
             val missing = required.filter { zip.getEntry(it) == null }
             assertTrue(missing.isEmpty(), "Missing STS assets in desktop-1.0.jar:\n${missing.joinToString("\n")}")
         }
     }
 }
-
