@@ -25,7 +25,7 @@ import java.util.ArrayList
 
 class TheForgetCharacter(name: String) : CustomPlayer(
     name,
-    TheForgetEnums.THE_FORGET,
+    requireNotNull(TheForgetEnums.THE_FORGET) { "TheForgetEnums.THE_FORGET was not initialized (SpireEnum failed?)" },
     null,
     null,
     SpineAnimation(TheForgetAssets.SKELETON_ATLAS, TheForgetAssets.SKELETON_JSON, 1.0f),
@@ -108,4 +108,3 @@ class TheForgetCharacter(name: String) : CustomPlayer(
 
     override fun getVampireText(): String? = null
 }
-

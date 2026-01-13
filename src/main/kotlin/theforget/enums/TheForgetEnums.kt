@@ -6,5 +6,5 @@ import com.megacrit.cardcrawl.characters.AbstractPlayer
 object TheForgetEnums {
     @SpireEnum
     @JvmField
-    var THE_FORGET: AbstractPlayer.PlayerClass = AbstractPlayer.PlayerClass.IRONCLAD
+    var THE_FORGET: AbstractPlayer.PlayerClass? = null
 }

@@ -28,11 +28,12 @@ object TheForgetMod : PostInitializeSubscriber, EditCharactersSubscriber {
 
     override fun receiveEditCharacters() {
         logger.info("Registering The Forget character...")
+        val playerClass = requireNotNull(TheForgetEnums.THE_FORGET) { "TheForgetEnums.THE_FORGET was not initialized (SpireEnum failed?)" }
         BaseMod.addCharacter(
             TheForgetCharacter(CardCrawlGame.playerName),
             TheForgetAssets.CHAR_SELECT_BUTTON,
             TheForgetAssets.CHAR_SELECT_PORTRAIT,
-            TheForgetEnums.THE_FORGET,
+            playerClass,
         )
     }
 
