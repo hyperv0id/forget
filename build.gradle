@@ -94,6 +94,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
 tasks.named("test").configure {
     useJUnitPlatform()
     dependsOn(tasks.named("verifyLocalDeps"))
+    dependsOn(tasks.named("jar"))
     systemProperty("theforget.stsJar", stsJar.absolutePath)
 }
 

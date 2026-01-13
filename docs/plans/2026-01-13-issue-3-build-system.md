@@ -195,7 +195,7 @@ git commit -m "dev: add devWatchInstall continuous install task"
 - stslib 接入
 - resources 前缀
 - jar 资源测试
-- watch install 脚本
+- `devWatchInstall` task（`--continuous`）
 
 **Step 2: Run tests**
 
@@ -216,4 +216,4 @@ git commit -m "docs: finalize issue #3 design with acceptance checklist"
 1) `./gradlew clean build --no-daemon` 生成 `build/libs/TheForget.jar`  
 2) `./gradlew installMod --no-daemon` 复制到 STS `mods/`  
 3) `./gradlew runMts --no-daemon` 可正常加载（日志包含 “The Forget loaded successfully.”）  
-4) `./scripts/dev-watch-install.sh` 持续运行；修改任意 `src/main/kotlin/**` 或 `src/main/resources/**`，观察到自动重新执行 `installMod`
+4) `./gradlew devWatchInstall --continuous --no-daemon` 持续运行；修改任意 `src/main/kotlin/**` 或 `src/main/resources/**`，观察到自动重新执行 `installMod`
