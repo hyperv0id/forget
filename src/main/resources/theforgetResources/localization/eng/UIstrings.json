@@ -1,0 +1,13 @@
+{
+  "theforget:SelfTooltip": {
+    "TEXT": [
+      "Self",
+      "Self is your HP. NL Taking damage reduces Self. NL Reaching 0 ends the run."
+    ]
+  },
+  "theforget:SelfLabel": {
+    "TEXT": [
+      "Self"
+    ]
+  }
+}
