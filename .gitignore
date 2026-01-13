@@ -1,1 +1,6 @@
 .ace-tool/
+.gradle/
+build/
+out/
+.idea/
+*.iml
