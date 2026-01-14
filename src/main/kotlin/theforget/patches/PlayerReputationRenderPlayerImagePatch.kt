@@ -1,6 +1,5 @@
 package theforget.patches
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.TimeUtils
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2
@@ -35,7 +34,7 @@ object PlayerReputationRenderPlayerImagePatch {
 
     @JvmStatic
     @SpirePrefixPatch
-    fun prefix(__instance: AbstractPlayer, __sb: SpriteBatch) {
+    fun prefix(__instance: AbstractPlayer) {
         didOverride = false
 
         if (__instance.chosenClass != TheForgetEnums.THE_FORGET) return
@@ -71,7 +70,7 @@ object PlayerReputationRenderPlayerImagePatch {
 
     @JvmStatic
     @SpirePostfixPatch
-    fun postfix(__instance: AbstractPlayer, __sb: SpriteBatch) {
+    fun postfix(__instance: AbstractPlayer) {
         if (!didOverride) return
 
         __instance.tint.color.r = savedTintR
@@ -85,4 +84,3 @@ object PlayerReputationRenderPlayerImagePatch {
         didOverride = false
     }
 }
-
