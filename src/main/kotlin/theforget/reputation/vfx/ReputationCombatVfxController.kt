@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon
 import com.megacrit.cardcrawl.core.Settings
+import com.megacrit.cardcrawl.core.CardCrawlGame
 import com.megacrit.cardcrawl.rooms.AbstractRoom
 import com.megacrit.cardcrawl.vfx.BorderFlashEffect
 import com.megacrit.cardcrawl.vfx.combat.BlurWaveChaoticEffect
@@ -36,11 +37,12 @@ object ReputationCombatVfxController {
 
     fun update(deltaSeconds: Float) {
         if (Settings.DISABLE_EFFECTS) return
+        if (!CardCrawlGame.isInARun()) return
 
         val player = AbstractDungeon.player ?: return
         if (player.chosenClass != TheForgetEnums.THE_FORGET) return
 
-        val room = AbstractDungeon.getCurrRoom() ?: return
+        val room = AbstractDungeon.getCurrMapNode()?.room ?: return
         if (room.phase != AbstractRoom.RoomPhase.COMBAT) return
 
         val tier = ReputationState.tier()
