@@ -33,7 +33,7 @@ object TheForgetMod :
 
     private const val REPUTATION_SAVE_FIELD_ID: String = "theforget:Reputation"
 
-    private val reputationTopPanelItem: ReputationTopPanelItem = ReputationTopPanelItem()
+    private var reputationTopPanelItem: ReputationTopPanelItem? = null
     private val reputationSaveField: ReputationSaveField = ReputationSaveField()
     private var reputationTopPanelAdded: Boolean = false
 
@@ -85,11 +85,12 @@ object TheForgetMod :
 
         // Avoid reserving top panel space for other characters: add/remove dynamically per run.
         if (isTheForget && !reputationTopPanelAdded) {
-            BaseMod.addTopPanelItem(reputationTopPanelItem)
+            val item = reputationTopPanelItem ?: ReputationTopPanelItem().also { reputationTopPanelItem = it }
+            BaseMod.addTopPanelItem(item)
             reputationTopPanelAdded = true
             logger.info("Reputation top panel item added")
         } else if (!isTheForget && reputationTopPanelAdded) {
-            BaseMod.removeTopPanelItem(reputationTopPanelItem)
+            reputationTopPanelItem?.let { BaseMod.removeTopPanelItem(it) }
             reputationTopPanelAdded = false
             logger.info("Reputation top panel item removed")
         }

@@ -1,11 +1,13 @@
 package theforget.core
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
-import com.megacrit.cardcrawl.helpers.ImageMaster
 import org.apache.logging.log4j.LogManager
 import java.io.ByteArrayOutputStream
+import kotlin.math.max
 
 /**
  * Texture loading helper that reads assets from the mod jar via ClassLoader resources.
@@ -19,13 +21,40 @@ object TheForgetTextures {
     private val logger = LogManager.getLogger(TheForgetTextures::class.java)
     private val cache: MutableMap<String, Texture> = mutableMapOf()
 
-    fun getOrLoad(path: String, fallback: Texture = ImageMaster.WHITE_SQUARE_IMG): Texture {
+    private val fallbackTexture: Texture by lazy {
+        // Avoid relying on ImageMaster being initialized.
+        // This does assume libGDX has a graphics context; if not, we still try and prefer "not crashing".
+        runCatching {
+            val pixmap = Pixmap(2, 2, Pixmap.Format.RGBA8888)
+            pixmap.setColor(Color.WHITE)
+            pixmap.fill()
+            val texture = Texture(pixmap)
+            texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
+            pixmap.dispose()
+            texture
+        }.getOrElse { t ->
+            logger.error("Failed to create fallback texture (Gdx init state: ${safeGdxState()})", t)
+            // Last-resort: attempt a 1x1 texture even if the above failed for size reasons.
+            val pixmap = Pixmap(max(1, 1), max(1, 1), Pixmap.Format.RGBA8888)
+            pixmap.setColor(Color.WHITE)
+            pixmap.fill()
+            val texture = Texture(pixmap)
+            pixmap.dispose()
+            texture
+        }
+    }
+
+    private fun safeGdxState(): String =
+        runCatching { "app=${Gdx.app != null}, graphics=${Gdx.graphics != null}, files=${Gdx.files != null}" }
+            .getOrDefault("Gdx not initialized")
+
+    fun getOrLoad(path: String): Texture {
         cache[path]?.let { return it }
 
         val stream = TheForgetTextures::class.java.classLoader.getResourceAsStream(path)
         if (stream == null) {
             logger.error("Missing texture resource on classpath: $path")
-            return fallback
+            return fallbackTexture
         }
 
         val bytes = stream.use { input ->
@@ -39,13 +68,18 @@ object TheForgetTextures {
             output.toByteArray()
         }
 
-        val pixmap = Pixmap(bytes, 0, bytes.size)
-        val texture = Texture(pixmap)
-        texture.setFilter(TextureFilter.Linear, TextureFilter.Linear)
-        pixmap.dispose()
+        val texture = runCatching {
+            val pixmap = Pixmap(bytes, 0, bytes.size)
+            val t = Texture(pixmap)
+            t.setFilter(TextureFilter.Linear, TextureFilter.Linear)
+            pixmap.dispose()
+            t
+        }.getOrElse { t ->
+            logger.error("Failed to load texture from classpath bytes: $path", t)
+            return fallbackTexture
+        }
 
         cache[path] = texture
         return texture
     }
 }
-
