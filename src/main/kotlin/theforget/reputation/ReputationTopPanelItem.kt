@@ -12,6 +12,7 @@ import com.megacrit.cardcrawl.helpers.ImageMaster
 import com.megacrit.cardcrawl.helpers.TipHelper
 import theforget.core.TheForgetAssets
 import theforget.core.TheForgetLocalization
+import theforget.core.TheForgetTextures
 import theforget.enums.TheForgetEnums
 
 /**
@@ -23,7 +24,7 @@ class ReputationTopPanelItem : TopPanelItem(loadIcon(), ID) {
     companion object {
         const val ID: String = "theforget:ReputationTopPanelItem"
 
-        private fun loadIcon(): Texture = ImageMaster.loadImage(TheForgetAssets.REPUTATION_ICON)
+        private fun loadIcon(): Texture = TheForgetTextures.getOrLoad(TheForgetAssets.REPUTATION_ICON)
 
         private fun formatSignedInt(value: Int): String =
             when {
