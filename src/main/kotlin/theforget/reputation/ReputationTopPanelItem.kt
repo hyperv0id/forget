@@ -3,6 +3,7 @@ package theforget.reputation
 import basemod.TopPanelItem
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.utils.TimeUtils
 import com.megacrit.cardcrawl.core.CardCrawlGame
 import com.megacrit.cardcrawl.core.Settings
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon
@@ -43,7 +44,14 @@ class ReputationTopPanelItem : TopPanelItem(loadIcon(), ID) {
 
     override fun render(sb: SpriteBatch) {
         if (!shouldRender()) return
+        val tier = ReputationState.tier()
+        val visuals = ReputationVisuals.visualState(tier)
+        val timeSeconds = TimeUtils.millis().toFloat() / 1000.0f
+
+        val oldColor = sb.color.cpy()
+        sb.color = ReputationVisuals.iconTintColor(visuals.iconStyle, timeSeconds)
         super.render(sb)
+        sb.color = oldColor
 
         // Draw the numeric amount near the icon (similar to how many mods render counters).
         val amount = formatSignedInt(ReputationState.get())
