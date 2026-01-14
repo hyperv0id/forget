@@ -5,8 +5,10 @@ import basemod.interfaces.EditStringsSubscriber
 import basemod.interfaces.EditCharactersSubscriber
 import basemod.interfaces.PostDungeonInitializeSubscriber
 import basemod.interfaces.PostInitializeSubscriber
+import basemod.interfaces.PostUpdateSubscriber
 import basemod.interfaces.StartGameSubscriber
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer
+import com.badlogic.gdx.Gdx
 import com.megacrit.cardcrawl.core.CardCrawlGame
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon
 import org.apache.logging.log4j.LogManager
@@ -17,11 +19,13 @@ import theforget.enums.TheForgetEnums
 import theforget.reputation.ReputationSaveField
 import theforget.reputation.ReputationState
 import theforget.reputation.ReputationTopPanelItem
+import theforget.reputation.vfx.ReputationCombatVfxController
 
 @SpireInitializer
 object TheForgetMod :
     PostInitializeSubscriber,
     PostDungeonInitializeSubscriber,
+    PostUpdateSubscriber,
     StartGameSubscriber,
     EditCharactersSubscriber,
     EditStringsSubscriber {
@@ -89,5 +93,9 @@ object TheForgetMod :
             reputationTopPanelAdded = false
             logger.info("Reputation top panel item removed")
         }
+    }
+
+    override fun receivePostUpdate() {
+        ReputationCombatVfxController.update(Gdx.graphics.deltaTime)
     }
 }
