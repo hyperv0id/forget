@@ -1,7 +1,10 @@
 package theforget
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import com.badlogic.gdx.graphics.Color
 import theforget.reputation.ReputationTier
 import theforget.reputation.ReputationVisuals
 
@@ -40,5 +43,13 @@ class ReputationVisualsTest {
             ReputationVisuals.visualState(ReputationTier.EXTREMELY_LOW),
         )
     }
-}
 
+    @Test
+    fun `combat tint override is only for negative tiers`() {
+        val base = Color(1.0f, 1.0f, 1.0f, 1.0f)
+        assertNull(ReputationVisuals.combatPlayerTintOverride(base, ReputationTier.HIGH, 0.0f))
+        assertNull(ReputationVisuals.combatPlayerTintOverride(base, ReputationTier.POSITIVE, 0.0f))
+        assertNotNull(ReputationVisuals.combatPlayerTintOverride(base, ReputationTier.NEGATIVE, 0.0f))
+        assertNotNull(ReputationVisuals.combatPlayerTintOverride(base, ReputationTier.EXTREMELY_LOW, 0.0f))
+    }
+}

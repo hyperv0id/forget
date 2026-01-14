@@ -6,6 +6,8 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon
 import com.megacrit.cardcrawl.core.Settings
 import com.megacrit.cardcrawl.rooms.AbstractRoom
 import com.megacrit.cardcrawl.vfx.BorderFlashEffect
+import com.megacrit.cardcrawl.vfx.combat.BlurWaveChaoticEffect
+import com.megacrit.cardcrawl.vfx.combat.BlurWaveNormalEffect
 import com.megacrit.cardcrawl.vfx.combat.SmokeBlurEffect
 import com.megacrit.cardcrawl.vfx.combat.VerticalAuraEffect
 import com.megacrit.cardcrawl.vfx.stance.DivinityParticleEffect
@@ -27,10 +29,14 @@ object ReputationCombatVfxController {
     private var binaryTimer: Float = 0.0f
     private var auraTimer: Float = 0.0f
     private var smokeTimer: Float = 0.0f
+    private var blurWaveTimer: Float = 0.0f
     private var wrathTimer: Float = 0.0f
+    private var chaoticBlurWaveTimer: Float = 0.0f
     private var glitchTimer: Float = 0.0f
 
     fun update(deltaSeconds: Float) {
+        if (Settings.DISABLE_EFFECTS) return
+
         val player = AbstractDungeon.player ?: return
         if (player.chosenClass != TheForgetEnums.THE_FORGET) return
 
@@ -58,7 +64,9 @@ object ReputationCombatVfxController {
             binaryTimer = 0.0f
             auraTimer = 0.0f
             smokeTimer = 0.0f
+            blurWaveTimer = 0.0f
             wrathTimer = 0.0f
+            chaoticBlurWaveTimer = 0.0f
             glitchTimer = 0.0f
             return
         }
@@ -108,6 +116,19 @@ object ReputationCombatVfxController {
                     auraTimer = 0.0f
                     AbstractDungeon.effectList.add(VerticalAuraEffect(Color(0.65f, 0.65f, 0.65f, 0.45f), x, y + 30.0f * s))
                 }
+
+                blurWaveTimer += deltaSeconds
+                if (profile.blurWaveIntervalSeconds > 0.0f && blurWaveTimer >= profile.blurWaveIntervalSeconds) {
+                    blurWaveTimer = 0.0f
+                    AbstractDungeon.effectList.add(
+                        BlurWaveNormalEffect(
+                            x,
+                            y + 60.0f * s,
+                            Color(0.65f, 0.65f, 0.65f, 0.45f),
+                            0.65f,
+                        ),
+                    )
+                }
             }
 
             ReputationVisuals.CombatAuraStyle.GLITCH -> {
@@ -121,6 +142,19 @@ object ReputationCombatVfxController {
                 if (profile.auraIntervalSeconds > 0.0f && auraTimer >= profile.auraIntervalSeconds) {
                     auraTimer = 0.0f
                     AbstractDungeon.effectList.add(VerticalAuraEffect(Color(1.0f, 0.15f, 0.15f, 0.85f), x, y + 35.0f * s))
+                }
+
+                chaoticBlurWaveTimer += deltaSeconds
+                if (profile.chaoticBlurWaveIntervalSeconds > 0.0f && chaoticBlurWaveTimer >= profile.chaoticBlurWaveIntervalSeconds) {
+                    chaoticBlurWaveTimer = 0.0f
+                    AbstractDungeon.effectList.add(
+                        BlurWaveChaoticEffect(
+                            x,
+                            y + 60.0f * s,
+                            Color(1.0f, 0.20f, 0.20f, 0.55f),
+                            0.95f,
+                        ),
+                    )
                 }
 
                 glitchTimer += deltaSeconds

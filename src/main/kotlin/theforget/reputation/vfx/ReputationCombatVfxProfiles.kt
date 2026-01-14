@@ -7,7 +7,9 @@ data class ReputationCombatVfxProfile(
     val binaryDigitIntervalSeconds: Float = 0.0f,
     val auraIntervalSeconds: Float = 0.0f,
     val smokeIntervalSeconds: Float = 0.0f,
+    val blurWaveIntervalSeconds: Float = 0.0f,
     val wrathParticleIntervalSeconds: Float = 0.0f,
+    val chaoticBlurWaveIntervalSeconds: Float = 0.0f,
     val glitchIntervalSeconds: Float = 0.0f,
 )
 
@@ -23,12 +25,13 @@ object ReputationCombatVfxProfiles {
             ReputationTier.NEGATIVE -> ReputationCombatVfxProfile(
                 smokeIntervalSeconds = 0.9f,
                 auraIntervalSeconds = 1.2f,
+                blurWaveIntervalSeconds = 1.3f,
             )
             ReputationTier.EXTREMELY_LOW -> ReputationCombatVfxProfile(
                 wrathParticleIntervalSeconds = 0.12f,
+                chaoticBlurWaveIntervalSeconds = 0.55f,
                 glitchIntervalSeconds = 0.08f,
                 auraIntervalSeconds = 0.30f,
             )
         }
 }
-

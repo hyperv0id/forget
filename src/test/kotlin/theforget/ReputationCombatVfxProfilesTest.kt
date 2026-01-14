@@ -32,6 +32,7 @@ class ReputationCombatVfxProfilesTest {
         val p = ReputationCombatVfxProfiles.forTier(ReputationTier.NEGATIVE)
         assertTrue(p.smokeIntervalSeconds > 0.0f)
         assertTrue(p.auraIntervalSeconds > 0.0f)
+        assertTrue(p.blurWaveIntervalSeconds > 0.0f)
         assertTrue(p.divinityParticleIntervalSeconds == 0.0f)
         assertTrue(p.wrathParticleIntervalSeconds == 0.0f)
         assertTrue(p.glitchIntervalSeconds == 0.0f)
@@ -41,9 +42,9 @@ class ReputationCombatVfxProfilesTest {
     fun `extremely low tier is glitch heavy`() {
         val p = ReputationCombatVfxProfiles.forTier(ReputationTier.EXTREMELY_LOW)
         assertTrue(p.wrathParticleIntervalSeconds > 0.0f)
+        assertTrue(p.chaoticBlurWaveIntervalSeconds > 0.0f)
         assertTrue(p.glitchIntervalSeconds > 0.0f)
         assertTrue(p.auraIntervalSeconds > 0.0f)
         assertTrue(p.divinityParticleIntervalSeconds == 0.0f)
     }
 }
-

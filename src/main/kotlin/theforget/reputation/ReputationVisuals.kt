@@ -58,5 +58,38 @@ object ReputationVisuals {
                 Color(1.0f, 0.25f, 0.25f, flicker)
             }
         }
-}
 
+    /**
+     * Combat-only player tint override. This is applied on top of the existing tint color.
+     *
+     * Returns null when no override should be applied.
+     */
+    fun combatPlayerTintOverride(base: Color, tier: ReputationTier, timeSeconds: Float): Color? =
+        when (tier) {
+            ReputationTier.HIGH -> null
+            ReputationTier.POSITIVE -> null
+            ReputationTier.NEGATIVE -> {
+                val avg = (base.r + base.g + base.b) / 3.0f
+                val t = 0.70f
+                val r = MathUtils.lerp(base.r, avg, t)
+                val g = MathUtils.lerp(base.g, avg, t)
+                val b = MathUtils.lerp(base.b, avg, t)
+                Color(r, g, b, base.a * 0.92f)
+            }
+            ReputationTier.EXTREMELY_LOW -> {
+                val flicker = if (((timeSeconds * 18.0f).toInt() % 3) == 0) 0.80f else 1.0f
+                val r = MathUtils.clamp(base.r + 0.35f, 0.0f, 1.0f)
+                val g = base.g * 0.75f
+                val b = base.b * 0.75f
+                Color(r, g, b, base.a * flicker)
+            }
+        }
+
+    fun combatJitterAmplitudeScale(tier: ReputationTier): Float =
+        when (tier) {
+            ReputationTier.HIGH -> 0.0f
+            ReputationTier.POSITIVE -> 0.0f
+            ReputationTier.NEGATIVE -> 0.35f
+            ReputationTier.EXTREMELY_LOW -> 1.0f
+        }
+}
