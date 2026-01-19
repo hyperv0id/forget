@@ -33,6 +33,7 @@ class ModJarResourcesTest {
             val requiredFiles = listOf(
                 "theforgetResources/localization/zhs/UIstrings.json",
                 "theforgetResources/localization/eng/UIstrings.json",
+                "theforgetResources/images/ui/topPanel/reputation.png",
             )
             val missingRequiredFiles = requiredFiles.filterNot { entries.contains(it) }
             assertTrue(

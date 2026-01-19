@@ -9,5 +9,32 @@
     "TEXT": [
       "Self"
     ]
+  },
+  "theforget:ReputationTooltip": {
+    "TEXT": [
+      "Reputation",
+      "Your name in the Spire. NL It may affect some events/interactions and their narrative feedback. NL NL Current: {0} NL Tier: {1} NL {2}"
+    ]
+  },
+  "theforget:ReputationLabel": {
+    "TEXT": [
+      "Reputation"
+    ]
+  },
+  "theforget:ReputationTierNames": {
+    "TEXT": [
+      "High",
+      "Positive",
+      "Negative",
+      "Extremely Low"
+    ]
+  },
+  "theforget:ReputationTierSummaries": {
+    "TEXT": [
+      "Pollution Clean: automatic/free NL Affinity Gain: 2x NL Combat: none",
+      "Pollution Clean: available NL Affinity Gain: normal NL Combat: none",
+      "Pollution Clean: unavailable NL Affinity Gain: 0.5x NL Combat: none (buffer zone)",
+      "Pollution Clean: unavailable NL Affinity Gain: stopped NL Combat: Imitate costs HP + damage bonus"
+    ]
   }
 }

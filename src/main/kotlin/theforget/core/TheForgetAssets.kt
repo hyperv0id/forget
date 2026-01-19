@@ -37,6 +37,9 @@ object TheForgetAssets {
 
     const val ENERGY_ORB_VFX = "images/ui/topPanel/energyRedVFX.png"
 
+    // Top panel UI (namespaced, shipped inside the mod jar)
+    const val REPUTATION_ICON = "theforgetResources/images/ui/topPanel/reputation.png"
+
     // Same default speeds used by common CustomEnergyOrb implementations.
     val ENERGY_ORB_LAYER_SPEEDS: FloatArray = floatArrayOf(
         -40.0f,

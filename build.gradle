@@ -57,6 +57,8 @@ dependencies {
     compileOnly files(stsJar, mtsJar, baseModJar, stslibJar)
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22"
     testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    // Tests compile against production classes that reference STS/BaseMod types (e.g. CustomSavable).
+    testImplementation files(stsJar, mtsJar, baseModJar, stslibJar)
 }
 
 tasks.register("verifyLocalDeps") {
